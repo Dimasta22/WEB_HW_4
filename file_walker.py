@@ -67,15 +67,21 @@ def get_extension(filename: str) -> str:
     return Path(filename).suffix[1:].upper()
 
 
-def scan(folder: Path) -> None:
-    for item in folder.iterdir():
+def scan(folder: Path):
+    file_list = sorted(folder.glob("**/*"))
+    sorter(file_list)
+
+
+def sorter(file_list) -> None:
+    for i in range(len(file_list)):
+        item = file_list[i]
         if item.is_dir():
             if item.name not in ("archives", "video", "audio", "documents", "images", "OTHER"):
                 FOLDERS.append(item)
-                scan(item)
             continue
+
         ext = get_extension(item.name)
-        fullname = folder / item.name
+        fullname = item
         if not ext:
             OTHER.append(fullname)
         else:

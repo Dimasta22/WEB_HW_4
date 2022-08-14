@@ -10,19 +10,21 @@ from concurrent.futures import ThreadPoolExecutor
 
 
 def handle_media(filename: Path, target_folder: Path):
+    filename = Path(filename)
     target_folder.mkdir(exist_ok=True, parents=True)
-    filename.replace(target_folder / normalize(filename.name))
+    filename.replace(target_folder / (normalize(filename.name[:-len(filename.suffix)]) + filename.suffix))
 
 
 def handle_other(filename: Path, target_folder: Path):
+    filename = Path(filename)
     target_folder.mkdir(exist_ok=True, parents=True)
-    filename.replace(target_folder / normalize(filename.name))
+    filename.replace(target_folder / (normalize(filename.name[:-len(filename.suffix)]) + filename.suffix))
 
 
 def handle_archives(filename: Path, target_folder: Path):
+    filename = Path(filename)
     target_folder.mkdir(exist_ok=True, parents=True)
-    folder_for_file = target_folder / \
-                      normalize(filename.name.replace(filename.suffix, ''))
+    folder_for_file = target_folder / normalize(filename.name.replace(filename.suffix, ''))
     folder_for_file.mkdir(exist_ok=True, parents=True)
     try:
         shutil.unpack_archive(str(filename.resolve()),
@@ -58,11 +60,11 @@ def sort(folder: Path):
         logging.debug(f'Start thread {i} in folder {folder.resolve()}')
     '''
 
-    with ThreadPoolExecutor(max_workers=2) as executor:
-        results = list(executor.map(scan, (folder.resolve(),)))
-        logging.debug(f'Start thread {1} in folder {folder.resolve()}')
+    # with ThreadPoolExecutor(max_workers=2) as executor:
+    # results = list(executor.map(scan, (folder.resolve(),)))
+    # logging.debug(f'Start thread {1} in folder {folder.resolve()}')
 
-    #scan(folder)
+    scan(folder)
 
     for file in JPEG_IMAGES:
         handle_media(file, folder / 'images' / 'JPEG')
